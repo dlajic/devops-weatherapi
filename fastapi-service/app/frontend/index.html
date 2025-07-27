@@ -1,0 +1,31 @@
+<!-- frontend/index.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wetterdaten Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Wetterdaten deutscher Landeshauptstädte</h1>
+
+  <h2>Zeitraum auswählen:</h2>
+  <label for="start-date">Von:</label>
+  <select id="start-date"></select>
+  <label for="end-date">Bis:</label>
+  <select id="end-date"></select>
+  <button id="load-range" class="preview-button">Datenvorschau</button>
+
+  <!-- Neuer Button für Download -->
+  <button id="download-xlsx">Excel herunterladen</button>
+  
+  <div id="range-results"></div>
+
+  <script src="script.js"></script>
+
+<footer>
+  <p class="footer-text">Datenquelle: <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a></p>
+</footer>
+</body>
+</html>
