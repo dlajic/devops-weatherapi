@@ -53,6 +53,7 @@ Then open your browser at: http://localhost:8000
 
 ## Project Structure
 
+```
 devops-weatherapi/
 │
 ├── fastapi-service/ # Backend API (FastAPI)
@@ -65,7 +66,7 @@ devops-weatherapi/
 │
 ├── docker-compose.yml # Compose config for backend + PostgreSQL
 └── README.md
-
+```
 
 ## Tech Stack
 
