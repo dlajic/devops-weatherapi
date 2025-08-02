@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a DevOps-driven, fully containerized data pipeline that automates the entire lifecycle of a weather data service — from data ingestion to deployment.
+This project is a DevOps-driven, fully containerized data pipeline that automates the entire lifecycle of a weather data service from data ingestion to deployment.
 
 It is designed to:
 
