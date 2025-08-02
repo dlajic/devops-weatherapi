@@ -83,24 +83,38 @@ Then open your browser at: http://localhost:8000
 ```
 devops-weatherapi/
 │
-├── fastapi-service/ # Backend API (FastAPI)
-│ ├── app/ # Main application code
-│ ├── Dockerfile # Backend Docker build
-│ └── start.sh # Startup script
+├── fastapi-service/              # Backend API (FastAPI)
+│   ├── app/                      # Application logic: routes, DB models, fetchers
+│   ├── Dockerfile                # Backend Docker image
+│   └── requirements.txt          # Python dependencies
 │
-├── frontend/ # Static frontend (to be containerized)
-│ └── index.html
+├── frontend/                     # Static frontend (HTML/CSS/JS)
+│   ├── index.html
+│   ├── script.js
+│   ├── style.css
+│   └── Dockerfile                # Frontend container (Node + http-server)
 │
-├── docker-compose.yml # Compose config for backend + PostgreSQL
+├── airflow/                      # Airflow scheduler (DAG for weather fetch)
+│   ├── dags/                     # Contains Airflow DAG definition
+│   ├── Dockerfile                # Airflow image with dependencies
+│   ├── entrypoint.sh             # Entrypoint for init
+│   └── requirements.txt
+│
+├── docker-compose.yml            # Orchestration of all services
+├── .env                          # Environment variables (DB URL, API keys etc.)
 └── README.md
 ```
 
 ## Tech Stack
 
-- **Python 3.11** + **FastAPI**
-- **PostgreSQL 15**
-- **Docker** + **Docker Compose**
-- **HTML/CSS/JavaScript** (Frontend)
+- **Python 3.11** – Core language for backend & scheduling logic  
+- **FastAPI** – Lightweight asynchronous API framework  
+- **PostgreSQL 15** – Relational database for persistent storage  
+- **Apache Airflow** – Workflow scheduler for daily data ingestion  
+- **Docker & Docker Compose** – Containerization and orchestration  
+- **Node.js + http-server** – Lightweight frontend container  
+- **HTML/CSS/JavaScript** – Static UI for visualizing weather data
+
 
 ## Version History
 
