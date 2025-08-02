@@ -2,9 +2,18 @@
 
 ## Overview
 
-This is the first stable version of the **DevOps Weather API** – a containerized application built with FastAPI (backend) and a static HTML/CSS/JS frontend.
+This project is a DevOps-driven, fully containerized data pipeline that automates the entire lifecycle of a weather data service — from data ingestion to deployment.
 
-The backend fetches and stores weather data in a PostgreSQL database, and exposes endpoints to query it. The project is fully containerized using **Docker** and runs locally via **Docker Compose**.
+It is designed to:
+
+- Fetch weather data daily via scheduled workflows (Airflow)
+- Store it persistently in a PostgreSQL database
+- Expose it through an API and frontend
+- Run entirely in Dockerized services
+- Be deployed and updated automatically through CI/CD pipelines
+- Scale to cloud environments like AWS or Railway
+
+The goal is to simulate a real-world production system that is modular, observable, automated, and ready for deployment with minimal manual intervention.
 
 ---
 
@@ -20,6 +29,18 @@ The backend fetches and stores weather data in a PostgreSQL database, and expose
 - **Orchestrated with `docker-compose`**
 - **Internal network communication** between services
 - **ENV-based config** for DB access & API keys
+
+---
+
+## Project Goals & Vision
+
+This project is designed as a realistic DevOps case study with long-term scalability in mind. Beyond the current functionality, future versions will include:
+
+- CI/CD automation via GitLab Pipelines (Linting, Tests, Build, Deploy)
+- Deployment to cloud platforms (AWS EC2, Railway, Render)
+- Basic monitoring with tools like Prometheus, Grafana, or Uptime Kuma
+- Optional: Add ML component for weather trend forecasting
+- Modular enough to support future extensions (e.g. Kafka, managed DBs, MLOps)
 
 ---
 
