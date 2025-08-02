@@ -1,4 +1,4 @@
-# DevOps Weather API – Version 1.0
+# DevOps Weather API – Version 1.1
 
 ## Overview
 
