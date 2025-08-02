@@ -8,34 +8,40 @@ The backend fetches and stores weather data in a PostgreSQL database, and expose
 
 ---
 
-## Current Features (v1.0)
+## 🔄 Current Features (**v1.1**)
 
 - **FastAPI backend** with async PostgreSQL access
 - **Modular architecture** for data models, routes & DB handling
-- **Script-based weather data fetcher**
+- **Script-based weather data fetcher** via Airflow
 - **PostgreSQL database container** (auto-created on startup)
-- **Daily weather data fetch manually triggerable**
-- **Simple static frontend** to visualize the data
-- **Dockerized backend + DB** (via `docker-compose`)
+- **Daily weather data fetch via Apache Airflow** (scheduled DAG)
+- **Simple static frontend** to visualize and download the data
+- **Fully containerized setup** (backend, frontend, DB, Airflow)
+- **Orchestrated with `docker-compose`**
+- **Internal network communication** between services
+- **ENV-based config** for DB access & API keys
 
 ---
 
 ## Roadmap (Next Milestones)
 
-### v1.1
-- Containerize the **frontend**
-- Integrate a **daily automated scheduler** for weather fetching (e.g. `cron` or `Airflow` inside Docker)
-- Improve error handling and logging
+### **v1.2**
+- Set up **CI pipeline** via GitLab (.gitlab-ci.yml)
+- Add **unit tests** for API & fetcher logic (pytest)
+- Push images to **GitLab Container Registry**
+- Prepare deployment to **cloud environment** (e.g. EC2, Railway)
 
-### v1.2+
-- Move deployment to **cloud environment** (Render, Railway, etc.)
-- CI/CD pipeline setup via **GitLab**
-- Add basic monitoring & health checks
+### **v1.3**
+- Add basic **monitoring & health checks** (e.g. Uptime Kuma, Prometheus)
+- Externalize API Key handling (via `.env` or secret manager)
+- Auto-deploy via GitLab CI → SSH or Docker Remote
 
-### v2.x (Advanced)
-- Switch to **managed cloud services** (e.g. PostgreSQL on Railway)
-- Integrate **Airflow** or **Dagster** for orchestration
-- Deploy via **Kubernetes** (optional advanced deployment)
+### **v2.x (Advanced Goals)**
+- Switch to **managed PostgreSQL** (e.g. Railway)
+- Move DAGs to **Dagster** (or enhanced Airflow setup)
+- Optional: Deploy to **Kubernetes**
+- Add ML component: **temperature trend forecasting**
+- API public docs (e.g. via Swagger + custom frontend)
 
 ---
 
@@ -74,3 +80,17 @@ devops-weatherapi/
 - **PostgreSQL 15**
 - **Docker** + **Docker Compose**
 - **HTML/CSS/JavaScript** (Frontend)
+
+## Version History
+
+### v1.0
+- FastAPI backend & PostgreSQL DB setup
+- Manual weather fetcher logic
+- Static frontend + local rendering
+- Dockerized backend & DB
+
+### v1.1 *(current)*
+- Frontend containerized (Node + http-server)
+- Airflow DAG for daily weather fetch added
+- Docker-compose for full stack (frontend, backend, Airflow, DB)
+- Internal networking + volume config cleaned up
