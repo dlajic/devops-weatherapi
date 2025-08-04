@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Waiting for PostgreSQL to become available..."
+echo "Waiting for PostgreSQL to become available...."
 until pg_isready -h db -p 5432 -U weather; do
   sleep 1
 done
