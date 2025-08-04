@@ -2,6 +2,7 @@ stages:
   - lint
   - test
   - build
+  - compose-test
 
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
@@ -31,3 +32,20 @@ build:
     - docker build -t weather-backend ./fastapi-service
     - docker build -t weather-frontend ./frontend
     - docker build -t weather-airflow ./airflow
+
+compose-test:
+  stage: compose-test
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker compose version
+    - docker compose -f docker-compose.yml up -d --build
+    - sleep 15  # gib den Containern Zeit zum Starten
+    - docker compose ps
+    - docker compose logs backend
+    - curl -f http://localhost:8000/health || (echo "Backend nicht erreichbar!" && exit 1)
+    - docker compose down
