@@ -23,7 +23,7 @@ STÄDTE = [
     "Wiesbaden",
     "Stuttgart",
     "München",
-    "Saarbrücken"
+    "Saarbrücken",
 ]
 
 
@@ -39,18 +39,20 @@ async def fetch_city_weather(city: str, db: Session):
             city=city,
             temperature=data["main"]["temp"],
             humidity=data["main"]["humidity"],
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
         db.add(entry)
         db.commit()
         db.refresh(entry)
         print(f"Gespeichert: {city} – {entry.temperature}°C")
 
+
 async def main():
     db = SessionLocal()
     tasks = [fetch_city_weather(city, db) for city in STÄDTE]
     await asyncio.gather(*tasks)
     db.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,0 +1,32 @@
+stages:
+  - lint
+  - test
+  - build
+
+variables:
+  PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
+
+lint:
+  stage: lint
+  image: python:3.11
+  script:
+    - pip install ruff
+    - ruff check fastapi-service/app
+
+test:
+  stage: test
+  image: python:3.11
+  script:
+    - pip install -r fastapi-service/requirements.txt
+    - pip install pytest
+    - pytest fastapi-service/app/tests
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t weather-backend ./fastapi-service
+    - docker build -t weather-frontend ./frontend
+    - docker build -t weather-airflow ./airflow

@@ -18,6 +18,7 @@ engine = create_engine(DATABASE_URL)
 # SessionLocal für synchrones SQLAlchemy
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 # Dependency für FastAPI
 def get_db():
     db = SessionLocal()
