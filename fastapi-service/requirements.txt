@@ -1,10 +1,21 @@
-fastapi
-uvicorn[standard]
-sqlalchemy
-databases
-aiosqlite
-httpx
-asyncpg
-psycopg2-binary
-pandas
-openpyxl
+# --- Web Framework & Server ---
+fastapi                 # High-performance web framework for APIs
+uvicorn[standard]       # ASGI server to run FastAPI
+
+# --- Database & ORM ---
+sqlalchemy              # ORM for DB interaction (sync/async)
+databases               # Async DB support for SQLAlchemy
+asyncpg                 # Async driver for PostgreSQL
+aiosqlite               # Async driver for SQLite (optional/fallback)
+psycopg2-binary         # PostgreSQL driver (sync, required by Airflow etc.)
+
+# --- Data Processing ---
+pandas                  # Data manipulation and analysis
+openpyxl                # Excel file export (used with pandas)
+
+# --- HTTP & API Access ---
+httpx                   # Async HTTP client (used in fetcher & tests)
+
+# --- Testing ---
+pytest                  # Python testing framework
+pytest-asyncio          # Async test support for pytest

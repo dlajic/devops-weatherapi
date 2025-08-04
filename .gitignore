@@ -1,2 +1,19 @@
+
+# Virtual Environments
 ".DS_Store" 
-fastapi-service/venv/
+.venv/
+venv/
+
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# SQLite DBs
+*.db
+
+# VSCode
+.vscode/
+
+# Testdaten
+*.sqlite
+

@@ -77,7 +77,7 @@ async def fetch_and_store_weather(city: str, db: Session = Depends(get_db)):
     if response.status_code != 200:
         raise HTTPException(status_code=404, detail="Stadt nicht gefunden")
 
-    data = response.json()
+    data = await response.json()
     new_entry = models.WeatherData(
         city=city, temperature=data["main"]["temp"], humidity=data["main"]["humidity"]
     )
