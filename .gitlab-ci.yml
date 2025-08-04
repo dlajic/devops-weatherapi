@@ -16,9 +16,10 @@ lint:
 test:
   stage: test
   image: python:3.11
+  variables:
+    PYTHONPATH: fastapi-service
   script:
     - pip install -r fastapi-service/requirements.txt
-    - pip install pytest
     - pytest fastapi-service/app/tests
 
 build:
