@@ -67,6 +67,8 @@ compose-test:
     - echo "== Inhalt von /opt/shared-code =="
     - docker exec airflow-webserver ls -la /opt/shared-code
 
+    - docker exec airflow-webserver printenv | grep PYTHONPATH
+
     # Airflow DAG Check
     - echo "== Prüfe, ob weather_dag vorhanden ist =="
     - docker exec airflow-webserver airflow dags list | grep weather_dag || (echo "❌ weather_dag nicht gefunden!" && exit 1)
