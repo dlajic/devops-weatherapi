@@ -2,6 +2,8 @@ FROM python:3.11-slim
 
 # Install PostgreSQL client tools (incl. pg_isready)
 RUN apt-get update && apt-get install -y postgresql-client && apt-get clean
+# ➕ Curl hinzufügen
+RUN apt-get update && apt-get install -y curl
 
 # Arbeitsverzeichnis im container setzen
 WORKDIR /fastapi-service
