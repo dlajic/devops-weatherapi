@@ -6,5 +6,5 @@ RUN pip install --no-cache-dir -r /requirements.txt
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-ENV PYTHONPATH=/opt/shared-code
+ENV PYTHONPATH="/opt/shared-code"
 
