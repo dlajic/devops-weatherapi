@@ -1,9 +1,9 @@
 stages:
+  - compose-test
   - lint
   - test
   - build
-  - compose-test
-
+  
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
 
