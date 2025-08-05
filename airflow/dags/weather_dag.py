@@ -20,3 +20,8 @@ with DAG(
         task_id="run_weather_fetch",
         python_callable=run_sync,
     )
+
+if __name__ == "__main__":
+    import sys
+    print("sys.path:", sys.path)
+    dag.test()
