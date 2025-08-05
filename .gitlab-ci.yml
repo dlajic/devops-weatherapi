@@ -4,7 +4,6 @@ stages:
   - test
   - build
 
-  
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
 
@@ -59,5 +58,8 @@ compose-test:
     # Airflow DAG Check
     - echo "== Prüfe, ob weather_dag vorhanden ist =="
     - docker exec airflow-webserver airflow dags list | grep weather_dag || (echo "❌ weather_dag nicht gefunden!" && exit 1)
+
+    - echo "== Prüfe, ob weather_dag ausführbar ist =="
+    - docker exec airflow-webserver airflow dags test weather_dag 2025-01-01 || (echo "❌ DAG wirft Fehler!" && exit 1)
 
     - docker compose down
