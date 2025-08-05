@@ -54,7 +54,7 @@ compose-test:
 
     # Datenbank vorbereiten
     - echo "== Starte DB-Setup =="
-    - docker exec fastapi-backend python /opt/shared-code/app/create_db.py
+    - docker exec fastapi-backend python /fastapi-service/app/create_db.py
     - echo "== DB-Setup abgeschlossen =="
 
     # Backend Healthcheck
