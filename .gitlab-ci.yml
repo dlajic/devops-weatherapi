@@ -22,6 +22,9 @@ test:
   script:
     - pip install -r fastapi-service/requirements.txt
     - pytest fastapi-service/app/tests
+  rules:
+    - changes:
+        - fastapi-service/**
 
 build:
   stage: build
@@ -42,6 +45,10 @@ compose-test:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
   script:
+    - echo "== Start.sh Zeilenenden prüfen =="
+    - file fastapi-service/start.sh || echo "❌ Datei nicht gefunden"
+    - cat -A fastapi-service/start.sh  # zeigt Sonderzeichen (CR/LF)
+    - ls -l fastapi-service/start.sh   # zeigt, ob +x gesetzt ist
     - docker compose version
     - docker compose -f docker-compose.yml up -d --build
     - sleep 15  # gib den Containern Zeit zum Starten
