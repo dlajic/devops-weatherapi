@@ -44,7 +44,7 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
-      - PYTHONPATH=/opt/shared-code
+      - PYTHONPATH=/opt/shared-code/app
     command: scheduler
     volumes:
       - ./airflow/dags:/opt/airflow/dags
@@ -63,7 +63,7 @@ services:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       - AIRFLOW__CORE__LOAD_EXAMPLES=false
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
-      - PYTHONPATH=/opt/shared-code
+      - PYTHONPATH=/opt/shared-code/app
     command: webserver
     ports:
       - "8080:8080"
