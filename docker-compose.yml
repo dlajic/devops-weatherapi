@@ -48,7 +48,7 @@ services:
     command: scheduler
     volumes:
       - ./airflow/dags:/opt/airflow/dags
-      - ./fastapi-service/app:/opt/shared-code/app
+      #- ./fastapi-service/app:/opt/shared-code/app
 
 
   airflow-webserver:
@@ -69,7 +69,7 @@ services:
       - "8080:8080"
     volumes:
       - ./airflow/dags:/opt/airflow/dags
-      - ./fastapi-service/app:/opt/shared-code/app
+      #- ./fastapi-service/app:/opt/shared-code/app
 
   frontend:
     build: ./frontend

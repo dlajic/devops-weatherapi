@@ -6,5 +6,6 @@ RUN pip install --no-cache-dir -r /requirements.txt
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
+COPY ../fastapi-service/app /opt/shared-code/app
 ENV PYTHONPATH=/opt/shared-code
 
