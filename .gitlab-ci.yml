@@ -3,6 +3,7 @@ stages:
   - lint
   - test
   - build
+
   
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
@@ -48,8 +49,15 @@ compose-test:
     - apk add --no-cache curl
     - docker compose version
     - docker compose -f docker-compose.yml up -d --build
-    - sleep 15  # gib den Containern Zeit zum Starten
+    - sleep 15
     - docker compose ps
     - docker compose logs backend
+
+    # Backend Healthcheck
     - docker exec fastapi-backend curl http://localhost:8000/health
+
+    # Airflow DAG Check
+    - echo "== Prüfe, ob weather_dag vorhanden ist =="
+    - docker exec airflow-webserver airflow dags list | grep weather_dag || (echo "❌ weather_dag nicht gefunden!" && exit 1)
+
     - docker compose down
