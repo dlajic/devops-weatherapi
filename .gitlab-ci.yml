@@ -51,5 +51,5 @@ compose-test:
     - sleep 15  # gib den Containern Zeit zum Starten
     - docker compose ps
     - docker compose logs backend
-    - docker exec fastapi-backend curl -f http://localhost:8000/health || (echo "❌ Backend nicht erreichbar!" && exit 1)
+    - docker exec fastapi-backend wget --spider -q http://localhost:8000/health || (echo "❌ Backend nicht erreichbar!" && exit 1)
     - docker compose down
