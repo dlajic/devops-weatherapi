@@ -1,11 +1,10 @@
-import sys
-sys.path.append("/opt/shared-code")
-
-from app.fetch_weather_daily import main as run  # <- jetzt klappt der Import
+from app.fetch_weather_daily import main as run  
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
+
+print("🚨 DAG wird geladen...") #debug for ci
 
 def run_sync():
     import asyncio
