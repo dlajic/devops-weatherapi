@@ -35,7 +35,9 @@ services:
       - airflow_postgres_data:/var/lib/postgresql/data
 
   airflow-scheduler:
-    build: ./airflow
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
     container_name: airflow-scheduler
     restart: always
     depends_on:
@@ -52,7 +54,9 @@ services:
 
 
   airflow-webserver:
-    build: ./airflow
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
     container_name: airflow-webserver
     restart: always
     depends_on:
