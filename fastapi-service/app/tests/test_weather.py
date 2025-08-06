@@ -48,7 +48,7 @@ def test_download_weather_excel(client):
 def test_preview_weather_data(client):
     for i in range(6):
         client.post("/weather", json={
-            "city": f"Berlin",
+            "city": "Berlin",
             "temperature": 20 + i,
             "timestamp": f"2024-01-0{i+1}T10:00:00"
         })

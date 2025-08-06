@@ -1,8 +1,6 @@
 import pytest
-import asyncio
 from unittest.mock import AsyncMock, patch
 from app.fetch_weather_daily import main
-from app.db.database import SessionLocal
 from app.models import models
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

@@ -20,3 +20,4 @@ httpx                   # Async HTTP client (used in fetcher & tests)
 pytest                  # Python testing framework
 pytest-asyncio          # Async test support for pytest
 pytest-cov
+ruff
