@@ -4,8 +4,6 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
 
-print("🚨 DAG wird geladen...") #debug for ci
-
 def run_sync():
     import asyncio
     asyncio.run(run())
@@ -20,8 +18,3 @@ with DAG(
         task_id="run_weather_fetch",
         python_callable=run_sync,
     )
-
-if __name__ == "__main__":
-    import sys
-    print("sys.path:", sys.path)
-    dag.test()

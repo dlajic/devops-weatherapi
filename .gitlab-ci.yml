@@ -55,9 +55,7 @@ compose-test:
     # Backend Healthcheck
     - docker exec fastapi-backend curl http://localhost:8000/health
 
-    # Optional: DAG-Struktur prüfen
-    - echo "== Inhalt von /opt/airflow/dags =="
-    - docker exec airflow-webserver ls -la /opt/airflow/dags
+    # DAG-Struktur prüfen
 
     - echo "== Prüfe auf DAG Import-Fehler =="
     - docker exec airflow-webserver airflow dags list-import-errors

@@ -49,7 +49,7 @@ services:
       - PYTHONPATH=/opt/shared-code
     command: scheduler
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
+      #- ./airflow/dags:/opt/airflow/dags
       #- ./fastapi-service/app:/opt/shared-code/app
 
 
@@ -72,7 +72,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
+      #- ./airflow/dags:/opt/airflow/dags
       #- ./fastapi-service/app:/opt/shared-code/app
 
   frontend:
