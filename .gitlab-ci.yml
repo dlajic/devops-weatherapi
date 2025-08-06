@@ -1,8 +1,8 @@
 stages:
-  - compose-test
   - lint
   - test
   - build
+  - compose-test
 
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
@@ -34,7 +34,7 @@ build:
   script:
     - docker build -t weather-backend ./fastapi-service
     - docker build -t weather-frontend ./frontend
-    - docker build -t weather-airflow ./airflow
+    - docker build -t weather-airflow -f Dockerfile.airflow .
 
 compose-test:
   stage: compose-test
