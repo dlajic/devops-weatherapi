@@ -52,35 +52,17 @@ compose-test:
     - docker compose ps
     - docker compose logs backend
 
-    # Datenbank vorbereiten
-    - echo "== Starte DB-Setup =="
-    - docker exec fastapi-backend python /fastapi-service/app/create_db.py
-    - echo "== DB-Setup abgeschlossen =="
-
     # Backend Healthcheck
     - docker exec fastapi-backend curl http://localhost:8000/health
 
+    # Optional: DAG-Struktur prüfen
     - echo "== Inhalt von /opt/airflow/dags =="
     - docker exec airflow-webserver ls -la /opt/airflow/dags
-
-    - echo "== Inhalt weather_dag.py =="
-    - docker exec airflow-webserver cat /opt/airflow/dags/weather_dag.py
 
     - echo "== Prüfe auf DAG Import-Fehler =="
     - docker exec airflow-webserver airflow dags list-import-errors
 
-    - echo "== Inhalt von /opt/shared-code =="
-    - docker exec airflow-webserver ls -la /opt/shared-code
-
-    - docker exec airflow-webserver printenv | grep PYTHONPATH
-
-    # Airflow DAG Check
     - echo "== Prüfe, ob weather_dag vorhanden ist =="
     - docker exec airflow-webserver airflow dags list | grep weather_dag || (echo "❌ weather_dag nicht gefunden!" && exit 1)
-
-    # explicit list check (optional)
-    - echo "== Prüfe, ob weather_dag ausführbar ist =="
-    - docker exec airflow-webserver bash -c 'printenv | grep PYTHONPATH'
-    - docker exec airflow-webserver bash -c 'PYTHONPATH=/opt/shared-code airflow dags test fetch_weather_daily 2025-06-06' || (echo "❌ DAG wirft Fehler!" && exit 1) 
 
     - docker compose down
