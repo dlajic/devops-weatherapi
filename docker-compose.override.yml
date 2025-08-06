@@ -48,9 +48,9 @@ services:
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
       - PYTHONPATH=/opt/shared-code
     command: scheduler
-    #volumes:
-      #- ./airflow/dags:/opt/airflow/dags
-      #- ./fastapi-service/app:/opt/shared-code/app
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./fastapi-service/app:/opt/shared-code/app
 
 
   airflow-webserver:
@@ -69,9 +69,9 @@ services:
     command: webserver
     ports:
       - "8080:8080"
-    #volumes:
-      #- ./airflow/dags:/opt/airflow/dags
-      #- ./fastapi-service/app:/opt/shared-code/app
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./fastapi-service/app:/opt/shared-code/app
 
   frontend:
     build: ./frontend

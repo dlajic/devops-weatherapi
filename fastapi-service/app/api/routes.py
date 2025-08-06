@@ -136,11 +136,13 @@ def download_weather_excel(
         .order_by(models.WeatherData.timestamp.asc(), models.WeatherData.city.asc())
     )
 
-    if not data:
+    result = data.all()  # hier holen wir die Ergebnisse aus der DB
+
+    if not result:
         raise HTTPException(status_code=404, detail="Keine Daten vorhanden.")
 
     sorted_data = sorted(
-        data,
+        result,
         key=lambda d: (
             d.timestamp.replace(microsecond=0),  # runde auf Sekunde
             d.city.lower(),  # alphabetisch nach Stadt

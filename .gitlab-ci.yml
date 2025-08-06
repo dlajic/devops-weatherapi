@@ -21,10 +21,13 @@ test:
     PYTHONPATH: fastapi-service
   script:
     - pip install -r fastapi-service/requirements.txt
-    - pytest fastapi-service/app/tests
+    - pip install pytest-cov
+    - pytest --cov=fastapi-service/app --cov-report=term-missing --cov-fail-under=90
+  coverage: '/^TOTAL.*?(\d+\%)$/'
   rules:
     - changes:
         - fastapi-service/**
+
 
 build:
   stage: build
