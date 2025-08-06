@@ -34,7 +34,7 @@ build:
   script:
     - docker build -t weather-backend ./fastapi-service
     - docker build -t weather-frontend ./frontend
-    - docker build -t weather-airflow -f Dockerfile.airflow .
+    - docker build -t weather-airflow ./airflow
 
 compose-test:
   stage: compose-test
