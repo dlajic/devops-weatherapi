@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadButton = document.getElementById("load-range");
 
   // Lade verfügbare Daten-Daten aus dem Backend
-  fetch("${API_BASE}/weather/dates")
+  fetch(`${API_BASE}/weather/dates`)
     .then((response) => response.json())
     .then((dates) => {
       dates.forEach((date) => {
