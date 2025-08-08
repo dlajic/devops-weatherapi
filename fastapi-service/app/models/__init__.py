@@ -1,0 +1,1 @@
+from .models import WeatherData  # ggf. weitere Models hier importieren
