@@ -18,6 +18,8 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://weather:weather123@db:5432/weatherdb
+    command: >
+      sh -c "python app/create_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
     volumes:
