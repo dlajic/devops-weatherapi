@@ -1,1 +1,2 @@
-from .models import WeatherData  # ggf. weitere Models hier importieren
+from .models import WeatherData as WeatherData  # noqa: F401
+__all__ = ["WeatherData"]
