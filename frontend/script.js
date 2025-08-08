@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    fetch(`http://127.0.0.1:8000/weather/preview?from_date=${from}&to_date=${to}`)
+    fetch(`${API_BASE}/weather/preview?from_date=${from}&to_date=${to}`)
       .then(response => response.json())
       .then(data => {
         resultsDiv.innerHTML = "";
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const url = `http://127.0.0.1:8000/weather/download_excel?from_date=${from}&to_date=${to}`;
+    const url = `${API_BASE}/weather/download_excel?from_date=${from}&to_date=${to}`;
 
     fetch(url)
       .then(res => {
