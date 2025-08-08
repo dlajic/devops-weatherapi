@@ -1,3 +1,8 @@
+const API_BASE =
+  window.location.hostname
+    ? `http://${window.location.hostname}:8000`
+    : "http://localhost:8000"; // Fallback für lokal
+
 document.addEventListener("DOMContentLoaded", () => {
   const startSelect = document.getElementById("start-date");
   const endSelect = document.getElementById("end-date");
@@ -5,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadButton = document.getElementById("load-range");
 
   // Lade verfügbare Daten-Daten aus dem Backend
-  fetch("http://127.0.0.1:8000/weather/dates")
+  fetch("${API_BASE}/weather/dates")
     .then((response) => response.json())
     .then((dates) => {
       dates.forEach((date) => {
