@@ -1,5 +1,5 @@
 {
-    email {$ACME_EMAIL}   #globale Option: Mail für Let's Encrypt
+    email {$ACME_EMAIL}   # globale Option: Mail für Let's Encrypt
 }
 
 {$DOMAIN} {
