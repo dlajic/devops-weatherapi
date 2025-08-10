@@ -110,6 +110,9 @@ services:
       - caddy_config:/config
     env_file:
       - .env
+    environment:
+      - DOMAIN=${DOMAIN}
+      - ACME_EMAIL=${ACME_EMAIL}
     depends_on:
       - frontend
       - backend
