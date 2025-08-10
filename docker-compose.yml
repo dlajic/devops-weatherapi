@@ -108,9 +108,8 @@ services:
       - ./caddy/caddyfile:/etc/caddy/caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-    environment:
-      - DOMAIN=${DOMAIN}
-      - ACME_EMAIL=${ACME_EMAIL}
+    env_file:
+      - .env
     depends_on:
       - frontend
       - backend
