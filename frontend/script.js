@@ -1,7 +1,5 @@
-const API_BASE =
-  window.location.hostname
-    ? `http://${window.location.hostname}:8000`
-    : "http://localhost:8000"; // Fallback für lokal
+// immer über Caddy, https + /api:
+const API_BASE = `${window.location.origin}/api`;
 
 document.addEventListener("DOMContentLoaded", () => {
   const startSelect = document.getElementById("start-date");
