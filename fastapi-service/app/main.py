@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import routes  # router handler
 import uvicorn
+import os
 
 app = FastAPI(
     title="DevOps Demo API",
@@ -9,12 +10,15 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# for CORS (Cross-Origin Resource Sharing), tell him access is ok from every point
+allowed = [f"https://{os.getenv('DOMAIN','devops-weatherapi.dev')}"]
+# optional also www:
+allowed.append(f"https://www.{os.getenv('DOMAIN','devops-weatherapi.dev')}")
+
+# for CORS (Cross-Origin Resource Sharing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=allowed,
+    allow_methods=["GET", "OPTIONS"],  # for Portfolio: read-only enough
     allow_headers=["*"],
 )
 

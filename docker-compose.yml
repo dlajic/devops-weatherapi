@@ -33,8 +33,8 @@ services:
         echo "waiting for db..." && sleep 2
       done;
       python -m app.create_db && uvicorn app.main:app --host 0.0.0.0 --port 8000'
-    ports:
-      - "8000:8000"
+    #ports:
+    #  - "8000:8000"
     volumes:
       - ./fastapi-service:/fastapi-service
 
@@ -81,8 +81,8 @@ services:
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
       - PYTHONPATH=/opt/shared-code
     command: webserver
-    ports:
-      - "8080:8080"
+    #ports:
+    #  - "8080:8080"
     #volumes:
       #- ./airflow/dags:/opt/airflow/dags
       #- ./fastapi-service/app:/opt/shared-code/app
@@ -90,13 +90,34 @@ services:
   frontend:
     build: ./frontend
     container_name: weather-frontend
-    ports:
-      - "3000:3000"
+    #ports:
+    #  - "3000:3000"
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
 
+  caddy:
+    image: caddy:2.7
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP (für ACME + Redirect)
+      - "443:443"    # HTTPS (öffentlich)
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+      - ACME_EMAIL=${ACME_EMAIL}
+    depends_on:
+      - frontend
+      - backend
+      #- airflow-webserver   #if wanted later
+
 volumes:
   postgres_data:
   airflow_postgres_data:
+  caddy_data:
+  caddy_config:

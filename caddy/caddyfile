@@ -1,0 +1,25 @@
+{
+    email {$ACME_EMAIL}   # globale Option: Mail für Let's Encrypt
+}
+
+{$DOMAIN} {
+    encode gzip
+
+    # Sicherheitsheader (nett & sinnvoll)
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "no-referrer"
+        X-Frame-Options "DENY"
+    }
+
+    # /api -> FastAPI (interner Container-Name: backend, Port 8000)
+    handle_path /api* {
+        reverse_proxy backend:8000
+    }
+
+    # alles andere -> Frontend (Container-Name: frontend, Port 3000)
+    handle {
+        reverse_proxy frontend:3000
+    }
+}
