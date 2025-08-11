@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy import func
 import httpx
+import pytz
 from fastapi.responses import StreamingResponse
 import pandas as pd
 from io import BytesIO
@@ -18,8 +18,18 @@ router = APIRouter()
 
 OPENWEATHER_API_KEY = "fb085c2dc735b55fe30a4f099834db37"
 
+# UTC -> Europe/Berlin (für Ausgabe)
+def to_berlin_time(ts: datetime) -> datetime:
+    if ts.tzinfo is None:  # naive UTC
+        ts = ts.replace(tzinfo=pytz.UTC)
+    return ts.astimezone(pytz.timezone("Europe/Berlin"))
 
-# Alle Wetterdaten abrufen/ optinal mit Stadt/Zeitfilter
+
+# -------------------------------------
+# API: Wetterdaten
+# -------------------------------------
+
+# Alle Wetterdaten abrufen (optional Filter) – Ausgabezeit in Berlin
 @router.get("/weather", response_model=List[schemas.WeatherOut])
 def get_weather(
     city: Optional[str] = None,
@@ -37,21 +47,29 @@ def get_weather(
             models.WeatherData.timestamp < date + timedelta(days=1),
         )
 
-    return query.all()
+    data = query.all()
+    # Zeit vor Rückgabe nach Europe/Berlin konvertieren
+    for w in data:
+        if w.timestamp is not None:
+            w.timestamp = to_berlin_time(w.timestamp)
+    return data
 
 
-# Neue Wetterdaten speichern
+# Neuen Messpunkt speichern (Speicherung in UTC)
 @router.post("/weather", response_model=schemas.WeatherOut)
 def create_weather_entry(data: schemas.WeatherIn, db: Session = Depends(get_db)):
     new_entry = WeatherData(
         city=data.city,
         temperature=data.temperature,
-        timestamp=data.timestamp
-        or datetime.utcnow(),  # fallback auf "jetzt", falls leer
+        humidity=getattr(data, "humidity", None),
+        timestamp=data.timestamp or datetime.utcnow(),  # UTC speichern
     )
     db.add(new_entry)
     db.commit()
     db.refresh(new_entry)
+    # Ausgabezeit auf Berlin drehen (nur Response)
+    if new_entry.timestamp is not None:
+        new_entry.timestamp = to_berlin_time(new_entry.timestamp)
     return new_entry
 
 
@@ -66,50 +84,52 @@ def delete_weather(id: int, db: Session = Depends(get_db)):
     return {"message": f"Wetterdaten mit ID {id} wurden gelöscht."}
 
 
-# get live weather from openweather api
+# Live-Wetter holen & speichern (UTC speichern)
 @router.post("/weather/live/{city}", response_model=schemas.WeatherOut)
 async def fetch_and_store_weather(city: str, db: Session = Depends(get_db)):
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
-
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
 
     if response.status_code != 200:
         raise HTTPException(status_code=404, detail="Stadt nicht gefunden")
 
-    data = await response.json()
+    data = response.json()
     new_entry = models.WeatherData(
-        city=city, temperature=data["main"]["temp"], humidity=data["main"]["humidity"]
+        city=city,
+        temperature=data["main"]["temp"],
+        humidity=data["main"]["humidity"],
+        timestamp=datetime.utcnow(),  # UTC
     )
     db.add(new_entry)
     db.commit()
     db.refresh(new_entry)
+    # Ausgabezeit auf Berlin drehen
+    new_entry.timestamp = to_berlin_time(new_entry.timestamp)
     return new_entry
 
 
-# ------------- frontend --------------
+# -------------------------------------
+# Endpunkte fürs Frontend
+# -------------------------------------
 
-
-# get all dates in dataset for frontend
+# Verfügbare Tage – nach Berlin-Zeit gruppieren (statt UTC)
 @router.get("/weather/dates", response_model=List[str])
 def get_available_dates(db: Session = Depends(get_db)):
-    dates = (
-        db.query(func.date(models.WeatherData.timestamp))
-        .distinct()
-        .order_by(func.date(models.WeatherData.timestamp))
-        .all()
-    )
-    return [str(d[0]) for d in dates]
+    # Alle Timestamps holen und lokal auf Tag mappen
+    raw = db.query(models.WeatherData.timestamp).all()
+    berlin_dates = sorted({to_berlin_time(t[0]).date() for t in raw})
+    return [str(d) for d in berlin_dates]
 
 
-# for range date
+# Bereichsabfrage – Ausgabezeit in Berlin
 @router.get("/weather/range", response_model=List[schemas.WeatherOut])
 def get_weather_range(
     from_date: datetime = Query(..., description="Startdatum (YYYY-MM-DD)"),
     to_date: datetime = Query(..., description="Enddatum (YYYY-MM-DD)"),
     db: Session = Depends(get_db),
 ):
-    return (
+    data = (
         db.query(models.WeatherData)
         .filter(
             models.WeatherData.timestamp >= from_date,
@@ -118,9 +138,13 @@ def get_weather_range(
         .order_by(models.WeatherData.timestamp.asc())
         .all()
     )
+    for w in data:
+        if w.timestamp is not None:
+            w.timestamp = to_berlin_time(w.timestamp)
+    return data
 
 
-# download option
+# Excel-Download – Zeitspalte in Berlin
 @router.get("/weather/download_excel")
 def download_weather_excel(
     from_date: datetime = Query(...),
@@ -134,26 +158,24 @@ def download_weather_excel(
             models.WeatherData.timestamp < to_date + timedelta(days=1),
         )
         .order_by(models.WeatherData.timestamp.asc(), models.WeatherData.city.asc())
+        .all()
     )
 
-    result = data.all()  # hier holen wir die Ergebnisse aus der DB
-
-    if not result:
+    if not data:
         raise HTTPException(status_code=404, detail="Keine Daten vorhanden.")
 
     sorted_data = sorted(
-        result,
+        data,
         key=lambda d: (
-            d.timestamp.replace(microsecond=0),  # runde auf Sekunde
-            d.city.lower(),  # alphabetisch nach Stadt
+            to_berlin_time(d.timestamp).replace(microsecond=0) if d.timestamp else datetime.min,
+            d.city.lower(),
         ),
     )
 
-    # Umwandeln in DataFrame
     df = pd.DataFrame(
         [
             {
-                "Zeitpunkt": entry.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "Zeitpunkt": to_berlin_time(entry.timestamp).strftime("%Y-%m-%d %H:%M:%S"),
                 "Stadt": entry.city,
                 "Temperatur (°C)": round(entry.temperature, 2),
             }
@@ -161,7 +183,6 @@ def download_weather_excel(
         ]
     )
 
-    # Excel-Datei in Memory schreiben
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Wetterdaten")
@@ -174,9 +195,7 @@ def download_weather_excel(
     )
 
 
-# Vorschau Daten
-
-
+# Vorschau – Zeiten in Berlin
 @router.get("/weather/preview")
 def preview_weather_data(
     from_date: datetime = Query(...),
@@ -201,7 +220,7 @@ def preview_weather_data(
 
     return [
         {
-            "timestamp": entry.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": to_berlin_time(entry.timestamp).strftime("%Y-%m-%d %H:%M:%S"),
             "city": entry.city,
             "temperature": round(entry.temperature, 2),
         }
