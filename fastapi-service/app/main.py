@@ -6,34 +6,44 @@ import os
 
 app = FastAPI(
     title="DevOps Demo API",
-    description="Example Service with FastAPT & SQLite",
-    version="1.0.0",
+    description="Example Service with FastAPI & Postgres",
+    version="1.2.0",
 )
 
-allowed = [f"https://{os.getenv('DOMAIN','devops-weatherapi.dev')}"]
-# optional also www:
-allowed.append(f"https://www.{os.getenv('DOMAIN','devops-weatherapi.dev')}")
+# Prüfen, ob wir im DEV- oder PROD-Modus laufen
+env = os.getenv("ENV", "prod")
 
-# for CORS (Cross-Origin Resource Sharing)
+if env == "dev":
+    # Lokale Entwicklung → localhost erlauben
+    allowed = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost",
+        "http://127.0.0.1",
+    ]
+else:
+    # Produktion → nur Domain erlauben
+    allowed = [
+        f"https://{os.getenv('DOMAIN','devops-weatherapi.dev')}",
+        f"https://www.{os.getenv('DOMAIN','devops-weatherapi.dev')}",
+    ]
+
+# Middleware für CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed,
-    allow_methods=["GET", "OPTIONS"],  # for Portfolio: read-only enough
+    allow_methods=["GET", "OPTIONS"],
     allow_headers=["*"],
 )
 
-# add routes
+# API-Routen einbinden
 app.include_router(routes.router)
 
-
-# Optional: Root-Route
+# Root-Route
 @app.get("/")
 def read_root():
     return {"message": "FastAPI running"}
 
-
-# Local start (if directly python main.py)
+# Start für lokalen Modus
 if __name__ == "__main__":
-    uvicorn.run("main_app", host="0.0.0.0", port=8000, reload=True)
-
-# for fastapi docs: http://127.0.0.1:8000/docs
+    uvicorn.run("main", host="0.0.0.0", port=8000, reload=True)

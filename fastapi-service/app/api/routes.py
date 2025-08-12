@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
-from sqlalchemy import func
 import httpx
 import pytz
 from fastapi.responses import StreamingResponse

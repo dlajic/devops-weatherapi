@@ -1,0 +1,112 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db-dev
+    environment:
+      POSTGRES_USER: weather
+      POSTGRES_PASSWORD: weather123
+      POSTGRES_DB: weatherdb_dev          # <-- eigene Dev-DB
+    ports:
+      - "5432:5432"                       # optional; nur nötig, wenn du lokal mit psql rein willst
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weather -d weatherdb_dev || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  backend:
+    build: ./fastapi-service
+    container_name: fastapi-backend-dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://weather:weather123@db:5432/weatherdb_dev  # <-- Dev-DB
+      - DOMAIN=localhost
+      - ENV=dev                                                     # <-- für CORS
+    working_dir: /fastapi-service
+    command: >
+      bash -lc '
+      until pg_isready -h db -p 5432 -U weather -d weatherdb_dev; do
+        echo "waiting for db..." && sleep 2
+      done;
+      python -m app.create_db && uvicorn app.main:app --host 0.0.0.0 --port 8000'
+    ports:
+      - "8000:8000"                      # <-- direkt lokal erreichbar
+    volumes:
+      - ./fastapi-service:/fastapi-service
+
+  airflow-db:
+    image: postgres:15
+    container_name: airflow-db-dev
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow_postgres_data_dev:/var/lib/postgresql/data
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: airflow/Dockerfile
+    container_name: airflow-scheduler-dev
+    restart: "no"
+    depends_on:
+      - airflow-db
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=devsecret
+      - PYTHONPATH=/opt/shared-code
+      # WICHTIG: wohin der DAG schreibt (deine App-DB):
+      - DATABASE_URL=postgresql://weather:weather123@db:5432/weatherdb_dev
+      # Ressource schonend:
+      - AIRFLOW__CORE__PARALLELISM=2
+      - AIRFLOW__CORE__DAG_CONCURRENCY=1
+      - AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG=1
+    command: scheduler
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./fastapi-service/app:/opt/shared-code/app
+
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: airflow/Dockerfile
+    container_name: airflow-webserver-dev
+    restart: "no"
+    depends_on:
+      - airflow-scheduler
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=devsecret
+      - PYTHONPATH=/opt/shared-code
+      # gleiche DB-URL auch hier verfügbar (falls DAG/Code sie braucht)
+      - DATABASE_URL=postgresql://weather:weather123@db:5432/weatherdb_dev
+    command: webserver
+    ports:
+      - "8080:8080"                      # <-- Airflow UI lokal
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./fastapi-service/app:/opt/shared-code/app
+
+  frontend:
+    build: ./frontend
+    container_name: weather-frontend-dev
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"                      # <-- Frontend lokal
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  postgres_data_dev:
+  airflow_postgres_data_dev:

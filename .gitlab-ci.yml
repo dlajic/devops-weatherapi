@@ -1,8 +1,10 @@
 stages:
+  - deploy
   - lint
   - test
   - build
   - compose-test
+
 
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/fastapi-service/app"
@@ -67,3 +69,24 @@ compose-test:
     - docker exec airflow-webserver airflow dags list | grep weather_dag || (echo "❌ weather_dag nicht gefunden!" && exit 1)
 
     - docker compose down
+
+deploy_production:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    # SSH & Docker-Client installieren
+    - apk add --no-cache openssh-client docker-cli
+    # SSH-Key vorbereiten
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    # Known Hosts einfügen
+    - echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+  script:
+    - ssh -i ~/.ssh/id_rsa ubuntu@$AWS_IP "
+        cd ~/devops-weatherapi &&
+        git pull &&
+        docker compose up -d --build
+      "
+  only:
+    - main
