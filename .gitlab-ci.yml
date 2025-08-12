@@ -77,7 +77,7 @@ deploy_production:
     - apk add --no-cache openssh-client docker-cli
     - mkdir -p ~/.ssh
     # Decode the key from base64 into a clean file
-    - echo "$SSH_PRIVATE_KEY_B64" | base64 -d > ~/.ssh/id_rsa
+    - printf '%s' "$SSH_PRIVATE_KEY_B64" | base64 -d > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
     # Verbose handshake to see exact errors if any
