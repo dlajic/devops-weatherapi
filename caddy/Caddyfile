@@ -26,11 +26,6 @@
 
 airflow.devops-weatherapi.dev {
     encode gzip
-
-    basicauth * {
-        admin $2a$14$8bvJzSz5hGSMhTP8jQdq2u6LDqnk0jkJ5eBhHgyDpK0wJ3c0Jexwm   # hier den Hash einfügen
-    }
-
     reverse_proxy airflow-webserver:8080
 }
 

@@ -77,6 +77,7 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
+      - AIRFLOW__WEBSERVER__WORKERS=2
       - PYTHONPATH=/opt/shared-code
     command: webserver
     #ports:
