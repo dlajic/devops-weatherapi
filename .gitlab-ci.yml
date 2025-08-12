@@ -74,14 +74,28 @@ deploy_production:
   stage: deploy
   image: alpine:latest
   before_script:
-    - apk add --no-cache openssh-client docker-cli
+    - apk add --no-cache openssh-client docker-cli dos2unix
     - mkdir -p ~/.ssh
-    # $SSH_PRIVATE_KEY ist eine File-Variable → direkt kopieren
-    - cp "$SSH_PRIVATE_KEY" ~/.ssh/id_rsa
+
+    # 1) Key aus GitLab-Variable holen (funktioniert für "File" ODER "Variable")
+    - |
+      if [ -f "$SSH_PRIVATE_KEY" ]; then
+        echo "→ SSH_PRIVATE_KEY ist eine File-Variable: $SSH_PRIVATE_KEY"
+        cp "$SSH_PRIVATE_KEY" ~/.ssh/id_rsa
+      else
+        echo "→ SSH_PRIVATE_KEY ist eine normale Variable"
+        printf "%s" "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+      fi
+    - dos2unix ~/.ssh/id_rsa || true
     - chmod 600 ~/.ssh/id_rsa
+
+    # 2) Key schnell validieren (ohne Inhalt zu leaken)
+    - ssh-keygen -y -f ~/.ssh/id_rsa >/dev/null || { echo "❌ Private Key unparseable"; exit 1; }
     - echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-    # Test ob SSH-Verbindung klappt
-    - ssh -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes -i ~/.ssh/id_rsa ubuntu@$AWS_IP "echo 'SSH OK'"
+
+    # 3) Verboser Handshake-Test (liefert klare Ursache)
+    - ssh -vvv -o StrictHostKeyChecking=yes -o BatchMode=yes -o IdentitiesOnly=yes -i ~/.ssh/id_rsa ubuntu@$AWS_IP "echo 'SSH OK'"
+
   script:
     - ssh -o IdentitiesOnly=yes -i ~/.ssh/id_rsa ubuntu@$AWS_IP "
         cd ~/devops-weatherapi &&
