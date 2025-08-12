@@ -25,8 +25,11 @@
 }
 
 airflow.devops-weatherapi.dev {
-    encode gzip
+  @allowme remote_ip 95.90.204.118
+  handle @allowme {
     reverse_proxy airflow-webserver:8080
+  }
+  respond 403
 }
 
 
