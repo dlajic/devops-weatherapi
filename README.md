@@ -137,26 +137,26 @@ Description:
 ## CI/CD Workflow
 
 ```mermaid
+%%{init: {'theme':'default','flowchart':{'htmlLabels':true}} }%%
 flowchart TB
-    DEV["Developer\n(git push)"] --> GL[("GitLab CI Pipeline\n(lint → test → build → deploy)")]
+  DEV["Developer<br/>(git push)"] --> GL["GitLab CI Pipeline<br/>(lint, test, build, deploy)"]
 
-    subgraph CI["GitLab CI"]
-      LINT["Ruff Lint"]
-      TEST["Pytest"]
-      BUILD["docker build\n(images)"]
-      DEPLOY["deploy_production\n(ssh → git pull → docker compose up -d --build)"]
-    end
+  subgraph CI[GitLab CI]
+    LINT["Ruff Lint"]
+    TEST["Pytest"]
+    BUILD["docker build<br/>(images)"]
+    DEPLOY["deploy_production<br/>(ssh → git pull → compose up -d --build)"]
+  end
 
-    GL --> LINT --> TEST --> BUILD --> DEPLOY
+  GL --> LINT --> TEST --> BUILD --> DEPLOY
 
-    DEPLOY -->|SSH (key, known_hosts)| EC2["AWS EC2"]
-    EC2 -->|"git pull"| REPO["~/devops-weatherapi"]
-    REPO -->|"docker compose up -d --build\n(rebuild only on changes)"| STACK["Caddy, FastAPI, Frontend,\nPostgres, Airflow"]
+  DEPLOY -->|SSH (key, known_hosts)| EC2[AWS EC2]
+  EC2 -->|"git pull"| REPO["~/devops-weatherapi"]
+  REPO -->|"docker compose up -d --build<br/>(only changed services rebuild)"| STACK["Caddy · FastAPI · Frontend · Postgres · Airflow"]
 
-    subgraph RUNTIME["Runtime"]
-      STACK
-    end
-
+  subgraph RUNTIME[Runtime]
+    STACK
+  end
 ```
 
 Description:
