@@ -93,6 +93,82 @@ devops-weatherapi/
 
 ---
 
+## System Architecture
+
+```mermaid
+flowchart LR
+    subgraph User["User"]
+      BROWSER["Browser"]
+    end
+
+    subgraph EC2["AWS EC2 (Docker Compose)"]
+      CADDY["Caddy (TLS, Reverse Proxy)"]
+      FE["Frontend (http-server)\nStatic HTML/CSS/JS"]
+      API["FastAPI Backend\n/app (uvicorn)"]
+      DB["PostgreSQL 15\n(weatherdb volume)"]
+      AF_SCHED["Airflow Scheduler"]
+      AF_WEB["Airflow Webserver\n(optional, IP-restricted)"]
+    end
+
+    OW["OpenWeather API\n(external)"]
+
+    BROWSER -->|"HTTPS https://devops-weatherapi.dev"| CADDY
+    CADDY -->|"/" static| FE
+    CADDY -->|"/api/*"| API
+    BROWSER -.->|"HTTPS https://airflow.devops-weatherapi.dev\n(Basic Auth / IP Restriction)"| AF_WEB
+    FE -->|XHR fetch\n/api/weather/*| API
+    API <--> |SQL| DB
+    AF_SCHED -->|calls| OW
+    AF_SCHED -->|INSERT\nweather_data| DB
+    AF_WEB -.-> AF_SCHED
+
+    classDef dashed stroke-dasharray: 5 5
+    class AF_WEB dashed
+
+```
+Description:
+
+Caddy serves as the TLS-enabled reverse proxy for routing traffic to the frontend, backend, and optional Airflow UI.
+Frontend is a static HTML/JS/CSS app for displaying weather data from the backend API.
+FastAPI backend handles API requests and reads/writes data from/to PostgreSQL.
+PostgreSQL stores all weather data persistently in a dedicated volume.
+Airflow Scheduler runs a daily DAG to fetch data from the OpenWeather API and insert it into the database.
+Airflow Webserver is optional, IP-restricted, and used only for DAG monitoring/admin tasks.
+
+## CI/CD Workflow
+
+```mermaid
+flowchart TB
+    DEV["Developer\n(git push)"] --> GL[("GitLab CI Pipeline\n(lint → test → build → deploy)")]
+
+    subgraph CI["GitLab CI"]
+      LINT["Ruff Lint"]
+      TEST["Pytest"]
+      BUILD["docker build\n(images)"]
+      DEPLOY["deploy_production\n(ssh → git pull → docker compose up -d --build)"]
+    end
+
+    GL --> LINT --> TEST --> BUILD --> DEPLOY
+
+    DEPLOY -->|SSH (key, known_hosts)| EC2["AWS EC2"]
+    EC2 -->|"git pull"| REPO["~/devops-weatherapi"]
+    REPO -->|"docker compose up -d --build\n(rebuild only on changes)"| STACK["Caddy, FastAPI, Frontend,\nPostgres, Airflow"]
+
+    subgraph RUNTIME["Runtime"]
+      STACK
+    end
+```
+
+Description:
+Push to main triggers the GitLab CI pipeline automatically.
+Lint step ensures code style and best practices using Ruff.
+Tests verify backend and data-fetching logic using Pytest.
+Build step creates fresh Docker images for all services.
+Deploy step connects to the AWS EC2 instance via SSH, pulls the latest code, and restarts only the changed containers.
+This ensures fully automated deployments with minimal downtime.
+
+---
+
 ## Local Development
 
 If you want to run the project locally instead of using the live instance:
