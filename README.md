@@ -126,13 +126,13 @@ flowchart LR
     class AF_WEB dashed
 
 ```
-Description:
-- Caddy serves as the TLS-enabled reverse proxy for routing traffic to the frontend, backend, and optional Airflow UI.
-- Frontend is a static HTML/JS/CSS app for displaying weather data from the backend API.
-- FastAPI backend handles API requests and reads/writes data from/to PostgreSQL.
-- PostgreSQL stores all weather data persistently in a dedicated volume.
-- Airflow Scheduler runs a daily DAG to fetch data from the OpenWeather API and insert it into the database.
-- Airflow Webserver is optional, IP-restricted, and used only for DAG monitoring/admin tasks.
+**Description – System Architecture**
+- **Caddy** – TLS-enabled reverse proxy, routing traffic to frontend, backend, and optional Airflow UI.  
+- **Frontend** – Static HTML/CSS/JS app for displaying weather data via API.  
+- **FastAPI Backend** – Handles API requests and reads/writes from PostgreSQL.  
+- **PostgreSQL** – Persistent storage for all weather data.  
+- **Airflow Scheduler** – Runs daily DAGs to fetch data from OpenWeather API and insert into DB.  
+- **Airflow Webserver** – Optional, IP-restricted, used only for DAG monitoring/admin tasks.
 
 ## CI/CD Workflow
 
@@ -159,13 +159,13 @@ flowchart TB
   end
 ```
 
-Description:
-- Push to main triggers the GitLab CI pipeline automatically.
-- Lint step ensures code style and best practices using Ruff.
-- Tests verify backend and data-fetching logic using Pytest.
-- Build step creates fresh Docker images for all services.
-- Deploy step connects to the AWS EC2 instance via SSH, pulls the latest code, and restarts only the changed containers.
-- This ensures fully automated deployments with minimal downtime.
+**Description – CI/CD Pipeline**
+- **Push to main** – Automatically triggers GitLab CI pipeline.  
+- **Lint** – Checks code style & best practices (**Ruff**).  
+- **Test** – Verifies API & fetcher logic (**Pytest**).  
+- **Build** – Creates fresh Docker images for all services.  
+- **Deploy** – SSH to EC2, pull latest code, rebuild only changed containers.  
+- **Goal** – Fully automated deployments with **minimal downtime**.
 
 ---
 
