@@ -56,11 +56,34 @@ services:
     depends_on:
       - airflow-db
     environment:
+      # Allgemein
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__PARALLELISM=8               # globales Limit
+      - AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG=1   # pro DAG nicht eskalieren
+      - AIRFLOW__CORE__STORE_SERIALIZED_DAGS=True  # weniger RAM beim Scheduler
+      - AIRFLOW__CORE__MIN_SERIALIZED_DAG_UPDATE_INTERVAL=30
+      - AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT=30
+
+      # Scheduler sparsam halten
+      - AIRFLOW__SCHEDULER__PARSING_PROCESSES=1
+      - AIRFLOW__SCHEDULER__MAX_THREADS=2
+      - AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC=5
+      - AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL=30
+      - AIRFLOW__SCHEDULER__MAX_DAGRUNS_TO_CREATE_PER_LOOP=2
+      - AIRFLOW__SCHEDULER__MAX_TIS_PER_QUERY=8
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
       - PYTHONPATH=/opt/shared-code
     command: scheduler
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 800M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     #volumes:
       #- ./airflow/dags:/opt/airflow/dags
       #- ./fastapi-service/app:/opt/shared-code/app
@@ -74,12 +97,24 @@ services:
     depends_on:
       - airflow-scheduler
     environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__WORKERS=1
+      - AIRFLOW__WEBSERVER__WORKER_CLASS=sync
+      - AIRFLOW__WEBSERVER__WEB_SERVER_WORKER_TIMEOUT=120
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=False
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
       - AIRFLOW__WEBSERVER__SECRET_KEY=mysupersecret
-      - AIRFLOW__WEBSERVER__WORKERS=2
       - PYTHONPATH=/opt/shared-code
     command: webserver
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 800M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     #ports:
     #  - "8080:8080"
     #volumes:
@@ -112,7 +147,12 @@ services:
     depends_on:
       - frontend
       - backend
-      - airflow-webserver  
+      - airflow-webserver 
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M 
 
 volumes:
   postgres_data:

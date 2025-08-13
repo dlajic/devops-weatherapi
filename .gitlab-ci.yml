@@ -1,9 +1,9 @@
 stages:
-  - deploy
   - lint
   - test
   - build
   - compose-test
+  - deploy
 
 
 variables:
@@ -72,6 +72,15 @@ compose-test:
 
 deploy_production:
   stage: deploy
+  only:
+    refs:
+      - main
+    changes:
+      - fastapi-service/**/*
+      - frontend/**/*
+      - airflow/**/*
+      - docker-compose.yml
+      - Caddyfile
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh-client docker-cli

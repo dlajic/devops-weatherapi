@@ -98,11 +98,11 @@ devops-weatherapi/
 If you want to run the project locally instead of using the live instance:
 
 ```bash
-# Build and start the containers
-docker compose up --build
+# Build and start the development stack
+docker compose -f docker-compose.dev.yml up --build
 
 # Stop all containers
-docker compose down
+docker compose -f docker-compose.dev.yml down
 ```
 Once running, access:
 
