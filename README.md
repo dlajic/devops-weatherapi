@@ -1,4 +1,4 @@
-# 🌦 DevOps Weather API – Full CI/CD Data Pipeline
+# DevOps Weather API – Full CI/CD Data Pipeline
 
 ## Overview
 
@@ -14,12 +14,12 @@ The project implements modern DevOps practices in a production-like architecture
 - **CI/CD pipeline** with GitLab for automated deployment to AWS EC2
 - **Infrastructure-as-Code** principles for reproducible deployments
 
-**🌍 Live Demo:** [https://devops-weatherapi.dev](https://devops-weatherapi.dev)  
+**Live Demo:** [https://devops-weatherapi.dev](https://devops-weatherapi.dev)  
 *The application is permanently online, hosted on a cloud instance, and fetches fresh weather data daily via automated pipelines.*
 
 ---
 
-## 🚀 Features
+## Features
 
 - **FastAPI Backend**
   - Asynchronous endpoints
@@ -51,31 +51,37 @@ The project implements modern DevOps practices in a production-like architecture
 ```
 devops-weatherapi/
 │
-├── fastapi-service/              # Backend API (FastAPI)
-│   ├── app/                      # Application logic: routes, DB models, fetchers
-│   ├── Dockerfile                # Backend Docker image
-│   └── requirements.txt          # Python dependencies
+├── fastapi-service/ # Backend API (FastAPI)
+│ ├── app/ # Routes, DB models, weather fetch logic
+│ ├── Dockerfile # Backend Docker image
+│ └── requirements.txt # Python dependencies
 │
-├── frontend/                     # Static frontend (HTML/CSS/JS)
-│   ├── index.html
-│   ├── script.js
-│   ├── style.css
-│   └── Dockerfile                # Frontend container (Node + http-server)
+├── frontend/ # Static frontend (HTML/CSS/JS)
+│ ├── index.html
+│ ├── script.js
+│ ├── style.css
+│ └── Dockerfile # Frontend container
 │
-├── airflow/                      # Airflow scheduler (DAG for weather fetch)
-│   ├── dags/                     # Contains Airflow DAG definition
-│   ├── Dockerfile                # Airflow image with dependencies
-│   ├── entrypoint.sh             # Entrypoint for init
-│   └── requirements.txt
+├── airflow/ # Airflow scheduler (DAG for weather fetch)
+│ ├── dags/ # Contains Airflow DAG definition
+│ ├── Dockerfile # Custom Airflow image
+│ ├── entrypoint.sh # Init/start script for Airflow
+│ └── requirements.txt
 │
-├── docker-compose.yml            # Orchestration of all services
-├── .env                          # Environment variables (DB URL, API keys etc.)
-└── README.md
+├── caddy/ # Reverse proxy config (Caddy server)
+│ ├── Caddyfile
+│ 
+├── .gitlab-ci.yml # CI/CD pipeline config (GitLab)
+├── docker-compose.yml # Orchestration for all containers
+├── docker-compose.dev.yml # For local testing
+├── .env # Environment variables (DB URL, API keys)
+├── README.md
+└── docs/ # Documentation & diagrams (optional)
 ```
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Python 3.11** – Backend & automation scripts  
 - **FastAPI** – API framework  
@@ -101,4 +107,5 @@ docker compose down
 Once running, access:
 
 Backend API: http://localhost:8000
+
 Frontend: http://localhost:3000
