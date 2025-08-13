@@ -1,82 +1,50 @@
-# DevOps Weather API – Version 1.1
+# 🌦 DevOps Weather API – Full CI/CD Data Pipeline
 
 ## Overview
 
-This project is a DevOps-driven, fully containerized data pipeline that automates the entire lifecycle of a weather data service from data ingestion to deployment.
+**DevOps Weather API** is a fully containerized **DevOps showcase project** that demonstrates the complete lifecycle of a weather-based data platform from **data ingestion** to **automated cloud deployment**.
 
-It is designed to:
+The project implements modern DevOps practices in a production-like architecture:
 
-- Fetch weather data daily via scheduled workflows (Airflow)
-- Store it persistently in a PostgreSQL database
-- Expose it through an API and frontend
-- Run entirely in Dockerized services
-- Be deployed and updated automatically through CI/CD pipelines
-- Scale to cloud environments like AWS or Railway
+- **Daily weather data ingestion** via scheduled workflows (Apache Airflow)
+- **Persistent storage** in a PostgreSQL database
+- **API exposure** through a FastAPI backend service
+- **Data visualization** via a static frontend
+- **Containerized infrastructure** with Docker & Docker Compose
+- **CI/CD pipeline** with GitLab for automated deployment to AWS EC2
+- **Infrastructure-as-Code** principles for reproducible deployments
 
-The goal is to simulate a real-world production system that is modular, observable, automated, and ready for deployment with minimal manual intervention.
-
----
-
-## 🔄 Current Features (**v1.1**)
-
-- **FastAPI backend** with async PostgreSQL access
-- **Modular architecture** for data models, routes & DB handling
-- **Script-based weather data fetcher** via Airflow
-- **PostgreSQL database container** (auto-created on startup)
-- **Daily weather data fetch via Apache Airflow** (scheduled DAG)
-- **Simple static frontend** to visualize and download the data
-- **Fully containerized setup** (backend, frontend, DB, Airflow)
-- **Orchestrated with `docker-compose`**
-- **Internal network communication** between services
-- **ENV-based config** for DB access & API keys
+**🌍 Live Demo:** [https://devops-weatherapi.dev](https://devops-weatherapi.dev)  
+*The application is permanently online, hosted on a cloud instance, and fetches fresh weather data daily via automated pipelines.*
 
 ---
 
-## Project Goals & Vision
+## 🚀 Features
 
-This project is designed as a realistic DevOps case study with long-term scalability in mind. Beyond the current functionality, future versions will include:
-
-- CI/CD automation via GitLab Pipelines (Linting, Tests, Build, Deploy)
-- Deployment to cloud platforms (AWS EC2, Railway, Render)
-- Basic monitoring with tools like Prometheus, Grafana, or Uptime Kuma
-- Optional: Add ML component for weather trend forecasting
-- Modular enough to support future extensions (e.g. Kafka, managed DBs, MLOps)
-
----
-
-## Roadmap (Next Milestones)
-
-### **v1.2**
-- Set up **CI pipeline** via GitLab (.gitlab-ci.yml)
-- Add **unit tests** for API & fetcher logic (pytest)
-- Push images to **GitLab Container Registry**
-- Prepare deployment to **cloud environment** (e.g. EC2, Railway)
-
-### **v1.3**
-- Add basic **monitoring & health checks** (e.g. Uptime Kuma, Prometheus)
-- Externalize API Key handling (via `.env` or secret manager)
-- Auto-deploy via GitLab CI → SSH or Docker Remote
-
-### **v2.x (Advanced Goals)**
-- Switch to **managed PostgreSQL** (e.g. Railway)
-- Move DAGs to **Dagster** (or enhanced Airflow setup)
-- Optional: Deploy to **Kubernetes**
-- Add ML component: **temperature trend forecasting**
-- API public docs (e.g. via Swagger + custom frontend)
+- **FastAPI Backend**
+  - Asynchronous endpoints
+  - PostgreSQL integration
+  - Automatic loading of new data
+- **Frontend (HTML/CSS/JavaScript)**
+  - Displays current weather data
+  - Data download option
+- **Apache Airflow**
+  - Scheduled DAG for daily data ingestion
+  - Easily extendable for complex workflows
+- **PostgreSQL**
+  - Persistent weather data storage
+  - Automatic schema initialization
+- **Dockerized Setup**
+  - Separate containers for backend, frontend, DB, and Airflow
+  - Unified internal network configuration
+- **GitLab CI/CD**
+  - Automatic deployment on push to `main`
+  - SSH-based rollout using `docker compose up -d --build`
+- **Security**
+  - Key-based SSH authentication
+  - Restricted access to admin services
 
 ---
-
-## How to Run (Development)
-
-```bash
-# Build and start the containers
-docker compose up --build
-
-# Stop all containers
-docker compose down
-```
-
-Then open your browser at: http://localhost:8000
 
 ## Project Structure
 
@@ -105,27 +73,32 @@ devops-weatherapi/
 └── README.md
 ```
 
-## Tech Stack
+---
 
-- **Python 3.11** – Core language for backend & scheduling logic  
-- **FastAPI** – Lightweight asynchronous API framework  
-- **PostgreSQL 15** – Relational database for persistent storage  
-- **Apache Airflow** – Workflow scheduler for daily data ingestion  
-- **Docker & Docker Compose** – Containerization and orchestration  
-- **Node.js + http-server** – Lightweight frontend container  
-- **HTML/CSS/JavaScript** – Static UI for visualizing weather data
+## 🛠 Tech Stack
 
+- **Python 3.11** – Backend & automation scripts  
+- **FastAPI** – API framework  
+- **PostgreSQL 15** – Relational database  
+- **Apache Airflow** – Workflow orchestration  
+- **Docker & Docker Compose** – Containerization & service orchestration  
+- **Node.js + http-server** – Frontend delivery  
+- **HTML/CSS/JavaScript** – Static UI  
 
-## Version History
+---
 
-### v1.0
-- FastAPI backend & PostgreSQL DB setup
-- Manual weather fetcher logic
-- Static frontend + local rendering
-- Dockerized backend & DB
+## Local Development
 
-### v1.1 *(current)*
-- Frontend containerized (Node + http-server)
-- Airflow DAG for daily weather fetch added
-- Docker-compose for full stack (frontend, backend, Airflow, DB)
-- Internal networking + volume config cleaned up
+If you want to run the project locally instead of using the live instance:
+
+```bash
+# Build and start the containers
+docker compose up --build
+
+# Stop all containers
+docker compose down
+```
+Once running, access:
+
+Backend API: http://localhost:8000
+Frontend: http://localhost:3000
