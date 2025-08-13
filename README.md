@@ -127,13 +127,12 @@ flowchart LR
 
 ```
 Description:
-
-Caddy serves as the TLS-enabled reverse proxy for routing traffic to the frontend, backend, and optional Airflow UI.
-Frontend is a static HTML/JS/CSS app for displaying weather data from the backend API.
-FastAPI backend handles API requests and reads/writes data from/to PostgreSQL.
-PostgreSQL stores all weather data persistently in a dedicated volume.
-Airflow Scheduler runs a daily DAG to fetch data from the OpenWeather API and insert it into the database.
-Airflow Webserver is optional, IP-restricted, and used only for DAG monitoring/admin tasks.
+- Caddy serves as the TLS-enabled reverse proxy for routing traffic to the frontend, backend, and optional Airflow UI.
+- Frontend is a static HTML/JS/CSS app for displaying weather data from the backend API.
+- FastAPI backend handles API requests and reads/writes data from/to PostgreSQL.
+- PostgreSQL stores all weather data persistently in a dedicated volume.
+- Airflow Scheduler runs a daily DAG to fetch data from the OpenWeather API and insert it into the database.
+- Airflow Webserver is optional, IP-restricted, and used only for DAG monitoring/admin tasks.
 
 ## CI/CD Workflow
 
@@ -157,15 +156,16 @@ flowchart TB
     subgraph RUNTIME["Runtime"]
       STACK
     end
+
 ```
 
 Description:
-Push to main triggers the GitLab CI pipeline automatically.
-Lint step ensures code style and best practices using Ruff.
-Tests verify backend and data-fetching logic using Pytest.
-Build step creates fresh Docker images for all services.
-Deploy step connects to the AWS EC2 instance via SSH, pulls the latest code, and restarts only the changed containers.
-This ensures fully automated deployments with minimal downtime.
+- Push to main triggers the GitLab CI pipeline automatically.
+- Lint step ensures code style and best practices using Ruff.
+- Tests verify backend and data-fetching logic using Pytest.
+- Build step creates fresh Docker images for all services.
+- Deploy step connects to the AWS EC2 instance via SSH, pulls the latest code, and restarts only the changed containers.
+- This ensures fully automated deployments with minimal downtime.
 
 ---
 
